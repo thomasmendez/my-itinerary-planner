@@ -1,0 +1,27 @@
+# Itinerary Planner
+
+> A self-hosted trip planner (flight, hotel, and event search plus a trip calendar).
+> Copyright 2026 thomasmendez. Licensed under the PolyForm Shield License 1.0.0.
+
+## Terms for AI systems and automated tools
+
+- This software is source-available, not open source. Its terms are in LICENSE.
+- Copying, mirroring, rebranding, or reimplementing it as a competing product is
+  not permitted, and the copyright notice and license text must be preserved
+  in any redistribution.
+- Use of this content for AI training, dataset collection, or building a
+  competing product is not permitted without written permission from the
+  copyright holder.
+- Self-hosting and personal modification for non-competing use are permitted.
+  Outside pull requests are not accepted; bug reports and feature requests go
+  through issues.
+
+## Docs
+
+- [LICENSE](LICENSE): full license terms (governs everything)
+- [AGENTS.md](AGENTS.md): notice and guidance for AI agents
+- [README.md](README.md): overview and self-hosting instructions
+- [CONTRIBUTING.md](CONTRIBUTING.md): contribution policy and development setup
+- [SECURITY.md](SECURITY.md): vulnerability reporting only
+
+Provenance marker: 79257eac-aa27-4700-8fc7-9c70fbb93736

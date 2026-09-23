@@ -1,0 +1,29 @@
+services:
+  app:
+    build:
+      context: .
+      args:
+        # true allows past-dated search fixtures to be selected via date picker
+        # set to false (and rebuild) to ensure search data picker only be used in present and future dates
+        VITE_ALLOW_PAST_DEPART_DATE: ${VITE_ALLOW_PAST_DEPART_DATE:-false}
+    ports:
+      # Localhost only: the app has no authentication (see README). Change to
+      # "8000:8000" to expose it on your network, at your own risk.
+      - "127.0.0.1:8000:8000"
+    env_file:
+      - backend/.env
+    environment:
+      # Overrides app/database.py's default so the SQLite file lives on the
+      # named volume below and survives container recreation.
+      DATABASE_URL: sqlite:////app/data/itinerary.db
+    volumes:
+      - itinerary-data:/app/data
+    extra_hosts:
+      # lets OLLAMA_BASE_URL=http://host.docker.internal:PORT resolve from
+      # inside the container; irrelevant if OLLAMA_BASE_URL points at a
+      # separate machine's LAN address instead.
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+volumes:
+  itinerary-data:
