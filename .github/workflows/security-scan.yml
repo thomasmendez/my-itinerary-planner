@@ -1,0 +1,46 @@
+name: Security scan
+
+# Scans the repository on every PR and push to main, plus a weekly run so newly published
+# advisories are caught even when nothing has changed. The container image is scanned in
+# docker.yml. Findings fail the run.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+# Least privilege: this job only reads the repo.
+permissions:
+  contents: read
+
+# A new push to a PR cancels the superseded run. Runs on main are never cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  trivy-fs:
+    name: Trivy (repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Checks uv.lock and package-lock.json for known vulnerabilities, the source for
+      # committed secrets, and the Dockerfile for misconfigurations.
+      - name: Scan repository
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+          format: table
