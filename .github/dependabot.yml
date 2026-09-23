@@ -1,0 +1,42 @@
+version: 2
+
+# Monthly update PRs for everything the project pins. Minor and patch bumps are grouped into
+# one PR per ecosystem; major bumps come as their own PRs
+updates:
+  - package-ecosystem: uv
+    directory: /backend
+    schedule:
+      interval: monthly
+    groups:
+      python-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: monthly
+    groups:
+      npm-minor-and-patch:
+        update-types: [minor, patch]
+
+  # Keeps the SHA-pinned actions in .github/workflows current.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions-minor-and-patch:
+        update-types: [minor, patch]
+
+  # The Dockerfile's base images. Node stays on the even-numbered LTS lines, so major
+  # bumps of it are done by hand. Python's minor version has to match the uv build image's
+  # (python3.13 in its tag, which Dependabot doesn't parse), so minor bumps of it are by hand too.
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: monthly
+    ignore:
+      - dependency-name: node
+        update-types: ["version-update:semver-major"]
+      - dependency-name: python
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]

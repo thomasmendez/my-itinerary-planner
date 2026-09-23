@@ -1,0 +1,61 @@
+name: Backend CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Least privilege: this job only reads the repo.
+permissions:
+  contents: read
+
+# A new push to a PR cancels the superseded run. Runs on main are never cancelled,
+# so every commit on main gets a complete result.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  test:
+    name: Lint & test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7.6.0
+        with:
+          python-version: "3.13" # matches the Dockerfile
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      # --locked fails if uv.lock is out of date with pyproject.toml.
+      - name: Install dependencies
+        run: uv sync --locked
+
+      # ruff is a dev dependency, so its version is pinned by uv.lock and kept current by Dependabot.
+      - name: Ruff check
+        run: uv run ruff check --output-format=github .
+
+      - name: Pytest
+        run: uv run pytest
+
+      # The Docker image runs `alembic upgrade head` on startup, so make sure the
+      # migration chain applies cleanly to an empty database.
+      - name: Apply migrations to an empty database
+        env:
+          DATABASE_URL: sqlite:///${{ runner.temp }}/migrate.db
+        run: uv run alembic upgrade head
+
+      # Fails if a model changed without a matching migration.
+      - name: Check migrations match the models
+        env:
+          DATABASE_URL: sqlite:///${{ runner.temp }}/migrate.db
+        run: uv run alembic check
