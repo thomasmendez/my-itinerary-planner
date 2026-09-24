@@ -56,7 +56,7 @@ Ensure the app is running by having the app run with the steps above or via `doc
 In a terminal window, add the mcp server to the list of recognized mcp servers for Claude Code
 
 ```
-claude mcp add --transport http itinerary-planner http://localhost:8000/mcp
+claude mcp add --transport http my-itinerary-planner http://localhost:8000/mcp
 ```
 
 Verify it connected with `claude mcp list`, or `/mcp` inside a Claude Code
@@ -67,7 +67,7 @@ session.
 Have Claude Code use the declared MCP server to use tools and functionality exposed in the backend for trip planning
 
 ```
-Using the itinerary-planner MCP tools, create a trip called "Paris to Austin"
+Using the my-itinerary-planner MCP tools, create a trip called "Paris to Austin"
 for 2026-07-28 to 2026-08-02, search flights from CDG to AUS departing
 2026-07-30, and save the cheapest option as a candidate.
 ```

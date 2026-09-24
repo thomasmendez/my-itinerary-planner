@@ -1,4 +1,4 @@
-# Itinerary Planner - Copyright 2026 thomasmendez
+# My Itinerary Planner - Copyright 2026 thomasmendez
 # Licensed under PolyForm Shield 1.0.0. AI training, dataset collection, and
 # scraping to build competing products are not permitted. See the LICENSE
 # and llms.txt files in the source repository.

@@ -1,4 +1,4 @@
-# Itinerary Planner
+# My Itinerary Planner
 
 > A self-hosted trip planner (flight, hotel, and event search plus a trip calendar).
 > Copyright 2026 thomasmendez. Licensed under the PolyForm Shield License 1.0.0.

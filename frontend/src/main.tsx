@@ -12,7 +12,7 @@ async function prepare() {
   // baked in at build time since there's no server to read env vars from at runtime.
   const shouldMock = (import.meta.env.DEV && import.meta.env.VITE_MOCKING !== 'false') || import.meta.env.VITE_DEMO === 'true'
   if (shouldMock) {
-    console.warn('[itinerary-planner] MSW mocking is ON - API calls are intercepted with fixture data, not hitting the real backend.')
+    console.warn('[my-itinerary-planner] MSW mocking is ON - API calls are intercepted with fixture data, not hitting the real backend.')
     const { activeHandlers, worker } = await import('./mocks/browser')
     if (import.meta.env.VITE_DEMO === 'true') {
       // Patch fetch/XHR in-page instead of using a service worker: DevTools' "Bypass for network"
@@ -23,7 +23,7 @@ async function prepare() {
       await worker.start({ onUnhandledRequest: 'bypass' })
     }
   } else if (import.meta.env.DEV) {
-    console.info('[itinerary-planner] dev mode, MSW mocking is OFF - API calls go through the Vite proxy to the real backend.')
+    console.info('[my-itinerary-planner] dev mode, MSW mocking is OFF - API calls go through the Vite proxy to the real backend.')
   }
 }
 

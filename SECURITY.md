@@ -1,6 +1,6 @@
 # Security Policy
 
-The goal is to keep the Itinerary Planner project secure and safe for end users.
+The goal is to keep the My Itinerary Planner project secure and safe for end users.
 
 Note that the app has no authentication and is meant for a single user or
 household on a trusted network (see README).

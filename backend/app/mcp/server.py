@@ -36,7 +36,7 @@ from app.trips.router import update_trip as _update_trip
 from app.trips.schemas import TripCreate, TripPatch, TripResponse
 
 mcp_server = MCPServer(
-    name="itinerary-planner",
+    name="my-itinerary-planner",
     instructions=(
         "Manage trips, search flights and hotels and manage their candidates, and "
         "read calendar entries. Confirming a candidate (locking it in) is done by "

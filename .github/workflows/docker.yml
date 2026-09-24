@@ -70,7 +70,7 @@ jobs:
         with:
           context: .
           load: true
-          tags: itinerary-planner:ci
+          tags: my-itinerary-planner:ci
           cache-from: type=gha,scope=build-${{ matrix.arch }}
           cache-to: type=gha,scope=build-${{ matrix.arch }},mode=max
 
@@ -79,7 +79,7 @@ jobs:
       - name: Scan image (Trivy)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          image-ref: itinerary-planner:ci
+          image-ref: my-itinerary-planner:ci
           scanners: vuln
           severity: HIGH,CRITICAL
           ignore-unfixed: true
@@ -90,7 +90,7 @@ jobs:
       # only answers if the migrations applied and the app booted. Requesting / checks
       # that the built React bundle was copied into the image.
       - name: Start container
-        run: docker run -d --name smoke -p 8000:8000 itinerary-planner:ci
+        run: docker run -d --name smoke -p 8000:8000 my-itinerary-planner:ci
 
       - name: Smoke test
         run: |
