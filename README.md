@@ -89,8 +89,11 @@ The following keys below are recommended, but not required to initially view the
    **If `SERPAPI_KEY` is set** — run the command below to have live search enabled with date pickers restricted to present/future:
 
    ```sh
-   docker compose up --build -d
+   docker compose pull
+   docker compose up -d
    ```
+  
+   To build from source instead (to run your own changes), use `docker compose up --build -d`
 
 4. **Open in browser**
 
@@ -127,8 +130,11 @@ To update the application run:
 
 ```sh
 git pull
+docker compose pull
 docker compose up --build -d
 ```
+
+If you build from source, run `git pull` and `docker compose up --build -d` instead
 
 Updates will not modify existing application data. The SQLite database file is untouched on rebuild
 

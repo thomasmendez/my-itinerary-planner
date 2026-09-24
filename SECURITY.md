@@ -15,7 +15,10 @@ The following tools are used to help mitigate vulnerabilities:
 - [Trivy](https://github.com/aquasecurity/trivy)
   - Vulnerability scanner that runs on PRs into the default branch and weekly.
     Scans the repository code (see `.github/workflows/security-scan.yml`) and
-    the container image (see `.github/workflows/docker.yml`)
+    the container image (see `.github/workflows/docker.yml`). Release images
+    are scanned before they are published (see `.github/workflows/publish.yml`),
+    and the published `latest` image is scanned weekly (see
+    `.github/workflows/image-scan.yml`)
 
 ## Supported Versions
 

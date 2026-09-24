@@ -1,0 +1,30 @@
+name: Published image scan
+
+# Scans the image users actually pull. A published image never changes, so this catches
+# vulnerabilities disclosed after the release. A failure means it's time for a patch
+# release. docker.yml covers the image built from main.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+# Least privilege. The image is public, so pulling it needs no token.
+permissions:
+  contents: read
+
+jobs:
+  trivy-image:
+    name: Trivy (ghcr.io latest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Scan published image
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: ghcr.io/${{ github.repository }}:latest
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+          format: table
