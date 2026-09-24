@@ -67,13 +67,13 @@ jobs:
         with:
           context: .
           load: true
-          tags: itinerary-planner:release
+          tags: my-itinerary-planner:release
           cache-from: type=gha,scope=build-${{ matrix.arch }}
 
       - name: Scan image (Trivy)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          image-ref: itinerary-planner:release
+          image-ref: my-itinerary-planner:release
           scanners: vuln
           severity: HIGH,CRITICAL
           ignore-unfixed: true
@@ -81,7 +81,7 @@ jobs:
           format: table
 
       - name: Start container
-        run: docker run -d --name smoke -p 8000:8000 itinerary-planner:release
+        run: docker run -d --name smoke -p 8000:8000 my-itinerary-planner:release
 
       - name: Smoke test
         run: |
@@ -138,11 +138,11 @@ jobs:
           flavor: |
             latest=auto
           labels: |
-            org.opencontainers.image.title=Itinerary Planner
+            org.opencontainers.image.title=My Itinerary Planner
             org.opencontainers.image.description=Self-hosted trip planner for flight, hotel, and event search with a built-in trip calendar
             org.opencontainers.image.licenses=PolyForm-Shield-1.0.0
           annotations: |
-            org.opencontainers.image.title=Itinerary Planner
+            org.opencontainers.image.title=My Itinerary Planner
             org.opencontainers.image.description=Self-hosted trip planner for flight, hotel, and event search with a built-in trip calendar
             org.opencontainers.image.licenses=PolyForm-Shield-1.0.0
 
