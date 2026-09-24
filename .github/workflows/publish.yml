@@ -1,0 +1,164 @@
+name: Publish image
+
+# Publishes the production image to GHCR when a GitHub Release is published. Drafts and
+# pre-releases don't trigger it, so a release candidate never becomes :latest. The manual
+# trigger re-runs a failed publish for a release tag that already exists.
+
+# Release v1.2.3 is pushed as :1.2.3, :1.2, :1 and :latest, for linux/amd64 and
+# linux/arm64 under one tag, so `docker pull` picks the right one on a PC or a Pi.
+
+on:
+  release:
+    types: [released]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to publish, e.g. v1.2.3. This also moves :latest, so use the newest release.
+        type: string
+        required: true
+
+# Least privilege. Only the publish job gets write access, to push to GHCR.
+permissions:
+  contents: read
+
+# Two publishes of the same tag never run at once, and neither is cancelled halfway.
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.tag || github.event.release.tag_name }}
+  cancel-in-progress: false
+
+env:
+  RELEASE_TAG: ${{ inputs.tag || github.event.release.tag_name }}
+
+jobs:
+  # The same checks docker.yml runs on every PR, repeated on the exact commit being
+  # released. Nothing is pushed unless both architectures build, scan clean and boot.
+  verify:
+    name: Build, scan & smoke test (linux/${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    steps:
+      # The tag becomes image tags, so it must be plain semver: v1.2.3 or v1.2.3-rc.1.
+      - name: Check release tag
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::Release tag '$RELEASE_TAG' is not in the form v1.2.3"
+            exit 1
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ env.RELEASE_TAG }}
+          persist-credentials: false
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      # Reads the layer cache docker.yml writes on main. Nothing is written back, since a
+      # cache saved from a tag run is only visible to that tag.
+      - name: Build image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          load: true
+          tags: itinerary-planner:release
+          cache-from: type=gha,scope=build-${{ matrix.arch }}
+
+      - name: Scan image (Trivy)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: itinerary-planner:release
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+          format: table
+
+      - name: Start container
+        run: docker run -d --name smoke -p 8000:8000 itinerary-planner:release
+
+      - name: Smoke test
+        run: |
+          curl --fail --silent --show-error \
+            --retry 30 --retry-delay 2 --retry-connrefused --retry-all-errors \
+            http://localhost:8000/health
+          echo
+          curl --fail --silent --show-error http://localhost:8000/ | grep -q 'id="root"'
+
+      - name: Show container logs
+        if: ${{ failure() }}
+        run: docker logs smoke
+
+  publish:
+    name: Push to GHCR
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write # push the image to ghcr.io
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ env.RELEASE_TAG }}
+          persist-credentials: false
+
+      # Builds both platforms from one runner, so they land under one multi-arch tag. The
+      # Dockerfile builds the frontend on the build host's platform, so only the Python
+      # stage runs under emulation for arm64.
+      - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Image tags without the leading v. A pre-release tag (v1.3.0-rc.1) only gets its
+      # full version, never :1.3, :1 or :latest. GHCR shows a multi-arch image's
+      # description from the index annotations, not from the labels, so both are set.
+      - name: Image metadata
+        id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        env:
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=semver,pattern={{version}},value=${{ env.RELEASE_TAG }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ env.RELEASE_TAG }}
+            type=semver,pattern={{major}},value=${{ env.RELEASE_TAG }}
+          flavor: |
+            latest=auto
+          labels: |
+            org.opencontainers.image.title=Itinerary Planner
+            org.opencontainers.image.description=Self-hosted trip planner for flight, hotel, and event search with a built-in trip calendar
+            org.opencontainers.image.licenses=PolyForm-Shield-1.0.0
+          annotations: |
+            org.opencontainers.image.title=Itinerary Planner
+            org.opencontainers.image.description=Self-hosted trip planner for flight, hotel, and event search with a built-in trip calendar
+            org.opencontainers.image.licenses=PolyForm-Shield-1.0.0
+
+      # Attaches an SBOM and build provenance, so users can see what the image contains
+      # and which workflow run built it.
+      - name: Build and push
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
+          sbom: true
+          provenance: mode=max
+          cache-from: |
+            type=gha,scope=build-amd64
+            type=gha,scope=build-arm64

@@ -1,5 +1,6 @@
 services:
   app:
+    image: ghcr.io/thomasmendez/my-itinerary-planner:latest
     build:
       context: .
       args:
