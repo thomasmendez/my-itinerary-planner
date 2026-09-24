@@ -1,4 +1,4 @@
-# Itinerary Planner
+# My Itinerary Planner
 
 [![Backend CI](https://github.com/thomasmendez/my-itinerary-planner/actions/workflows/backend.yml/badge.svg)](https://github.com/thomasmendez/my-itinerary-planner/actions/workflows/backend.yml)
 [![Frontend CI](https://github.com/thomasmendez/my-itinerary-planner/actions/workflows/frontend.yml/badge.svg)](https://github.com/thomasmendez/my-itinerary-planner/actions/workflows/frontend.yml)
@@ -63,7 +63,7 @@ The following keys below are recommended, but not required to initially view the
 
    ```sh
    git clone https://github.com/thomasmendez/my-itinerary-planner.git
-   cd itinerary-planner
+   cd my-itinerary-planner
    ```
 
 2. **Configure environment variables**
@@ -141,7 +141,7 @@ docker compose exec app sh -c 'cat /app/data/itinerary.db' > backup.db
 
 # Restore (stop the app first so nothing is writing to it)
 docker compose down
-docker run --rm -v itinerary-planner_itinerary-data:/data -v "$(pwd)":/backup alpine \
+docker run --rm -v my-itinerary-planner_itinerary-data:/data -v "$(pwd)":/backup alpine \
   cp /backup/backup.db /data/itinerary.db
 docker compose up -d
 ```
