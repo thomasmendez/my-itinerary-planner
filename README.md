@@ -31,9 +31,11 @@ It searches and compares flights, hotels, and local events via SerpApi's Google 
 
 ## Features
 
-- **Flight, hotel, and event search** — normalized results across providers, cached server-side to reduce API cost
+- **Flight, hotel, and event search** — normalized results across providers, cached server-side to reduce API usage
 - **Custom entries** for flights, hotels, rentals, and events — cover anything a search provider doesn't (car rentals, a friend's Airbnb, a private tour)
-- **Three-stage item flow** — search → save desired result as a candidate → confirm, so half-decided plans don't clutter your itinerary
+- **Three-stage item flow** — search → save desired result as a candidate → confirm, so un-decided plans don't clutter the itinerary
+- **Price comparison** — have candidates weigh their prices against each other before confirming one
+- **Budget and trip spend** — confirmed and pending costs broken down by category, with a running potential total for the trip
 - **Trip calendar** — auto-derived from saved items (flights, hotels, rentals, events); candidates and confirmed items render distinctly
 - **Map view** — geocoded points for all saved items plus routing between them
 - **Chat assistant** — natural-language search/save against the active trip, backed by the same MCP tools an external AI agent would use
