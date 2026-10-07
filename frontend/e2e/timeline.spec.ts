@@ -149,6 +149,8 @@ test('removing a round-trip flight from Timeline warns that both legs go togethe
 })
 
 test('Timeline rows interleave chronologically across item kinds, not grouped by parent item', async ({ page }) => {
+  // Pin today's date so the yearless "Oct 1" search result resolves to 2026, not next year.
+  await page.clock.setFixedTime(new Date('2026-08-31T00:00:00'))
   await addRoundTripCustomTransport(page)
 
   // Same page, no reload: switch to Events and add the Oct 1 candidate so the
