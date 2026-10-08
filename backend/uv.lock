@@ -53,8 +53,8 @@ wheels = [
 ]
 
 [[package]]
-name = "app"
-version = "1.0.0"
+name = "my-itinerary-planner"
+version = "1.0.1"
 source = { editable = "." }
 dependencies = [
     { name = "alembic" },

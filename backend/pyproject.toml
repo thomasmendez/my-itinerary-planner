@@ -1,6 +1,6 @@
 [project]
-name = "app"
-version = "1.0.0"
+name = "my-itinerary-planner"
+version = "1.0.1"
 description = "Backend API for a self-hosted trip planner: flight, hotel, and event search with a trip calendar"
 readme = "README.md"
 license = "LicenseRef-PolyForm-Shield-1.0.0"
