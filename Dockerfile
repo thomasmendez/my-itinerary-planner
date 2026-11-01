@@ -2,7 +2,7 @@
 
 # Stage 1: build the React SPA. The output is static files, so it runs on the build host's
 # platform, which keeps the arm64 build from running npm under QEMU emulation.
-FROM --platform=$BUILDPLATFORM node:24.21-trixie-slim@sha256:8ec5d7557396cfe32d21c3f9c13072355ceab22b584578ca4bb28af31120cffe AS frontend-build
+FROM --platform=$BUILDPLATFORM node:24.22-trixie-slim@sha256:54f84b4cf8432b21aaffd5d3ce8d41e12cea0d10d33c09d2f3c9879d49d6b446 AS frontend-build
 WORKDIR /frontend
 COPY frontend/package.json frontend/package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci
