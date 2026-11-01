@@ -14,7 +14,7 @@ ENV VITE_ALLOW_PAST_DEPART_DATE=$VITE_ALLOW_PAST_DEPART_DATE
 RUN npm run build
 
 # Stage 2: install the backend's dependencies and code into /app/.venv with uv
-FROM ghcr.io/astral-sh/uv:0.12.23-python3.13-trixie-slim@sha256:a6aeb5c166af9f765f9c68e585b5a5148c28f3b8a362f90151cecea88b21a3e2 AS backend-build
+FROM ghcr.io/astral-sh/uv:0.13.6-python3.13-trixie-slim@sha256:e586c1c65b7071aec78f02c5587c76c5011159cd76b3d6f1255f40e48e850abc AS backend-build
 WORKDIR /app
 
 # Build the venv against the image's Python. Without UV_PYTHON, backend/.python-version (3.12)
