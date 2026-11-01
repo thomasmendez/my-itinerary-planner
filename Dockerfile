@@ -35,7 +35,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 # Stage 3: runtime. The official Python image without uv, serving the built SPA as static
 # files (see app/main.py)
-FROM python:3.13.16-slim-trixie@sha256:bf44cdfcb76cd3b41e879bc058fc37ec5872002ccfde7fcb765e218cde0cd79c
+FROM python:3.13.18-slim-trixie@sha256:76baad6037690d6e8c4397fbcaef17bca6f19eecef822b708fe8fa3417d30bb5
 WORKDIR /app
 
 COPY --from=backend-build /app /app
