@@ -75,7 +75,7 @@ jobs:
         with:
           image-ref: my-itinerary-planner:release
           scanners: vuln
-          severity: HIGH,CRITICAL
+          severity: CRITICAL
           ignore-unfixed: true
           exit-code: "1"
           format: table

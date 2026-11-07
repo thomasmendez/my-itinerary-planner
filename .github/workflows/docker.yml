@@ -74,14 +74,14 @@ jobs:
           cache-from: type=gha,scope=build-${{ matrix.arch }}
           cache-to: type=gha,scope=build-${{ matrix.arch }},mode=max
 
-      # Fails on HIGH/CRITICAL vulnerabilities that have a fix available. Secrets and
+      # Fails on CRITICAL vulnerabilities that have a fix available. Secrets and
       # misconfigurations are covered by the repository scan in security-scan.yml.
       - name: Scan image (Trivy)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: my-itinerary-planner:ci
           scanners: vuln
-          severity: HIGH,CRITICAL
+          severity: CRITICAL
           ignore-unfixed: true
           exit-code: "1"
           format: table

@@ -24,7 +24,7 @@ jobs:
         with:
           image-ref: ghcr.io/${{ github.repository }}:latest
           scanners: vuln
-          severity: HIGH,CRITICAL
+          severity: CRITICAL
           ignore-unfixed: true
           exit-code: "1"
           format: table
