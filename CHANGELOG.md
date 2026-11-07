@@ -6,7 +6,7 @@ All notable changes to this project are documented here. The format is based on
 
 ## [1.0.2] - 2026-11-07
 
-Security release. **Upgrading from 1.0.0 is recommended.** There are no application
+Security release. **Upgrading from 1.0.1 is recommended.** There are no application
 code, database, or configuration changes.
 
 - Upgraded `certifi` from 2026.10.23 to 2026.10.18, fixing the eMudhra critical vulnerability
